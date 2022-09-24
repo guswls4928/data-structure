@@ -45,9 +45,12 @@ int com_fac(int a, int b) {
 int main() {
 	int a, b;
 
-	scanf_s("%d %d", &a, &b); //연산할 두 변수를 입력
-
+	printf("공배수를 구할 두 변수를 입력하세요(a, b) : ");
+	scanf_s("%d %d", &a, &b); //공배수를 구할 두 변수를 입력
 	com_mul(a, b); //공배수 개수를 구하는 함수
+
+	printf("공약수를 구할 두 변수를 입력하세요(a, b) : ");
+	scanf_s("%d %d", &a, &b); //공약수를 구할 두 변수를 입력
 	com_fac(a, b); //공약수 개수를 구하는 함수
 
 	return 0;
