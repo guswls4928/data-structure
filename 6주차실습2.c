@@ -22,7 +22,7 @@ int main() {
 			printf("%c\b", input[i - 1]);
 			i -= 2;
 		}
-		else if (input[i] != str[i]) { //입력받은 글자가 입력할 문자열과 다른 경우 입력을 공백으로 바꾸고 출력값을 지우고 에러음 출력후 i값을 되돌림
+		else if (input[i] != str[i]) { //입력받은 글자가 입력할 문자열과 다른 경우 입력을 공백으로 바꾸고 출력값을 지우고 에러음 출력후 그 글자를 입력받았던 i값으로 되돌림
 			input[i] = ' ';
 			printf("\b%c\b\a", input[i]);
 			i--;
