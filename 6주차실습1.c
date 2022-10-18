@@ -1,12 +1,12 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <math.h>
 
-typedef struct  { //원의 정보를 저장할 구조체
-	double x,y,r;
+typedef struct { //원의 정보를 저장할 구조체
+	double x, y, r;
 }CIRCLE;
 
 typedef struct { //점의 정보를 저장할 구조체
-	double x,y;
+	double x, y;
 }POINT;
 
 void circle_to_point(CIRCLE c1, POINT p1) { //점과 원사이의 관계를 측정하는 함수
@@ -28,7 +28,7 @@ void circle_to_circle(CIRCLE c1, CIRCLE c2) { //원과 원사이의 관계를 �
 		printf("일치합니다.\n");
 	}
 	double d = sqrt(pow((c1.x - c2.x), 2) + pow((c1.y - c2.y), 2)); //두 원 사이의 거리를 측정후 d에 저장
-	if ((d == (c1.r + c2.r)) || ((d + c1.r)==c2.r || (d + c2.r) == c1.r)) { //두 원의 반지름의 합이 더 원 사이의 거리와 같거나 두 원사이의 거리와 한 원의 반지름과 더했을때 다른 원의 반지름과 같을 경우
+	if ((d == (c1.r + c2.r)) || ((d + c1.r) == c2.r || (d + c2.r) == c1.r)) { //두 원의 반지름의 합이 더 원 사이의 거리와 같거나 두 원사이의 거리와 한 원의 반지름과 더했을때 다른 원의 반지름과 같을 경우
 		printf("한 점 일치합니다.\n");
 	}
 	else if ((d + c2.r) < c1.r) { //두 원사이의 거리와 원B의 반지름 합이 원A의 반지름보다 작을경우
@@ -47,9 +47,10 @@ void circle_to_circle(CIRCLE c1, CIRCLE c2) { //원과 원사이의 관계를 �
 
 int main() {
 	double x, y, r;
-	
+
 	printf("원A을 입력하세요(x,y,r) : ");
 	scanf("%lf %lf %lf", &x, &y, &r);
+	r = sqrt(r);
 	CIRCLE c1 = { x,y,r };
 
 	printf("점을 입력하세요(x,y) : ");
@@ -60,6 +61,7 @@ int main() {
 
 	printf("원B을 입력하세요(x,y,r) : ");
 	scanf("%lf %lf %lf", &x, &y, &r);
+	r = sqrt(r);
 	CIRCLE c2 = { x,y,r };
 
 	circle_to_circle(c1, c2);
