@@ -1,9 +1,10 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <string.h>
+#include <conio.h>
 
 int main() {
-	char str[101] = { ' ' };
-	char input[101] = { ' ' };
+	char str[202] = { ' ' };
+	char input[202] = { ' ' };
 
 	printf("입력할 문자열을 입력하세요 : ");
 	scanf("%s", str);
