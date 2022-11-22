@@ -8,23 +8,18 @@
 #define TRUE 1
 #define FLASE 0
 
-int cnt;
 
 struct tree{
 	struct tree* rlink;
 	int data;
-	int level;
 	struct tree* llink;
 };
 
 struct tree* root;
 
 void init() {
-	cnt = 0;
-	
 	root = (struct tree*)malloc(sizeof(struct tree));
 	root->data = NULL;
-	root->level = 0;
 	root->rlink = NULL;
 	root->llink = NULL;
 }
@@ -43,7 +38,6 @@ void nodecheck(struct tree *key, int value) {
 	if (key->data > value) {
 		if (key->llink == NULL) {
 			struct tree* newnode = node(value);
-			newnode->level = key->level + 1;
 			key->llink = newnode;
 		}
 		else {
@@ -54,7 +48,6 @@ void nodecheck(struct tree *key, int value) {
 	else {
 		if (key->rlink == NULL) {
 			struct tree* newnode = node(value);
-			newnode->level = key->level + 1;
 			key->rlink  = newnode;
 		}
 		else {
@@ -66,25 +59,23 @@ void nodecheck(struct tree *key, int value) {
 
 void makenode(int value) {
 	struct tree* key = root;
-	cnt++;
 	if (key->data == NULL) {
-		root->level = 1;
 		root->data = value;
 		return;
 	}
 	nodecheck(key, value);
 }
 
-struct tree* searchnode(struct tree* key, int value) {
+int searchnode(struct tree* key, int value) {
 	if (key->data > value) {
-		if (key->llink == NULL) return key;
+		if (key->llink == NULL) return FALSE;
 		key = searchnode(key->llink, value);
 	}
 	else if (key->data < value) {
-		if (key->rlink == NULL) return key;
+		if (key->rlink == NULL) return FALSE;
 		key = searchnode(key->rlink, value);
 	}
-	return key;
+	return TRUE;
 }
 
 struct tree* minnode(struct tree* key) {
@@ -95,56 +86,72 @@ struct tree* minnode(struct tree* key) {
 }
 
 int removenode(int value) {
-	struct tree* key;
-	key = root;
-	key = searchnode(key, value);
-	if (key->data != value) return FALSE;
-	cnt--;
-	if (key->llink == NULL && key->rlink == NULL) {
-		key = NULL;
-		printf("error %d", key->data);
-		return TRUE;
-	}
-	else if (key->llink == NULL) {
-		key->data = key->rlink->data;
-		key->llink = key->rlink->llink;
-		key->rlink = key->rlink->rlink;
-		return TRUE;
-	}
-	else if (key->rlink == NULL) {
-		key->data = key->llink->data;
-		key->rlink = key->llink->rlink;
-		key->llink = key->llink->llink;
-		return TRUE;
+	struct tree* parent, * child, * p;
+	struct tree* min, * min_parent;
+	parent = NULL;
+	p = root;
+	while (p != NULL && p->data != value) {
+		parent = p;
+		if (p->data > value) {
+			p = p->llink;
+		}
+		else {
+			p = p->rlink;
+		}
 	}
 
-	struct tree* temp;
-	struct tree* min;
-	min = minnode(key->rlink);
-	temp = key->rlink;
-	key->data = min->data;
-	key->rlink = min->rlink;
-	while (key->rlink != NULL) {
-		key = key->rlink;
+	if (p == NULL) {
+		return FALSE;
 	}
-	key->rlink = temp;
+
+	if (p->llink == NULL && p->rlink == NULL) {
+		if (parent != NULL) {
+			if (parent->llink == p) parent->llink = NULL;
+			else parent->rlink = NULL;
+		}
+		else init();
+	}
+	else if ((p->llink == NULL) || (p->rlink == NULL)) {
+		if (p->llink == NULL) child = p->rlink;
+		else child = p->llink;
+
+		if (parent != NULL) {
+			if (parent->llink == p) parent->llink = child;
+			else parent->rlink = child;
+		}
+		else root = child;
+	}
+
+	else {
+		min_parent = p;
+		min = p->rlink;
+		
+		while (min->llink != NULL) {
+			min_parent = min;
+			min = min->llink;
+		}
+
+		if (min_parent->rlink == min) min_parent->rlink = min->llink;
+		else min_parent->llink = min->rlink;
+		p->data = min->data;
+	}
 	return TRUE;
 }
 
-int printnode(struct tree* key) {
+int printnode(struct tree* key, int level) {
 	struct tree* temp;
 	if (key->data == NULL) return FALSE;
 	if (key->rlink != NULL) {
 		temp = key->rlink;
-		printnode(temp);
+		printnode(temp, level+1);
 	}
-	for (int i = 1; i < key->level; i++) {
+	for (int i = 1; i < level; i++) {
 		printf("\t");
 	}
 	printf("%d\n", key->data);
 	if (key->llink != NULL) {
 		temp = key->llink;
-		printnode(temp);
+		printnode(temp, level+1);
 	}
 }
 
@@ -169,7 +176,7 @@ int main()
 					printf("삽입할 값 : ");
 					scanf("%d", &value);
 					while (getchar() != '\n');
-					if (value > 100 || value < 0) {
+					if (value <= 0) {
 						printf("\nError!\n");
 						printf("정수만 입력해주세요.\n\n");
 						continue;
@@ -188,16 +195,15 @@ int main()
 			case 3:
 				printf("검색할 값 : ");
 				scanf("%d", &value);
-				struct tree* key;
 				key = root;
-				key = searchnode(key, value);
-				if (key->data != value) printf("해당 노드가 존재하지 않습니다.\n");
-				else printf("1\n");
+				if (searchnode(key, value) == FALSE) printf("해당 노드가 존재하지 않습니다.\n");
+				else printf("해당 노드는 트리내에 존재합니다.\n");
 				break;
 
 			case 4:
 				key = root;
-				if (printnode(key) == FALSE) printf("빈 트리입니다.");
+				int level = 1;
+				if (printnode(key, level) == FALSE) printf("빈 트리입니다.");
 				break;
 
 			case 5:
